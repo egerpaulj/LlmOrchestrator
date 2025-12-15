@@ -1,0 +1,23 @@
+[project]
+name = "llm_orchestrator"
+version = "0.1.0"
+description = "Orchestrate LLM tasks. Define workflows, run and track progress."
+readme = "readme.py.md"
+requires-python = ">=3.10.16"
+authors = [
+    {name = "Paul Eger"},
+]
+dependencies = [
+    
+]
+
+[project.urls]
+homepage = "https://github.com/egerpaulj/LlmOrchestrator"
+repository = "https://github.com/egerpaulj/LlmOrchestrator.git"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["llm_orchestrator", "*"]
+
+
+
