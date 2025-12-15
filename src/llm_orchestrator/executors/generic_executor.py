@@ -1,5 +1,6 @@
 from typing import Type
 from pydantic import BaseModel
+from llm_orchestrator.core.task import TaskStatus
 from llm_orchestrator.core.workflow import Workflow
 from llm_orchestrator.inference_api.llm_config import LlmConfig
 from llm_orchestrator.inference_api.strategies.base import LLMProviderStrategy
@@ -17,6 +18,9 @@ class WorkflowExecutor:
 
     def execute_workflow(self, workflow: Workflow):
         for task in workflow.tasks:
+            if task.status is TaskStatus.COMPLETED:
+                continue
+            
             llm_inference = create_inference_strategy_local(name = task.strategy, llm_config=self.llm_config)
             result = llm_inference.inference(
                 model=task.model, 
