@@ -1,9 +1,9 @@
 import logging
 from typing import Type
-from llm_orchestrator.inference_api.llm_config import LlmConfig
+from llm_unified_orchestrator.inference_api.llm_config import LlmConfig
 from ollama import Client
 
-from llm_orchestrator.inference_api.strategies.base import T, LLMProviderStrategy
+from llm_unified_orchestrator.inference_api.strategies.base import T, LLMProviderStrategy
 
 class OllamaStrategy(LLMProviderStrategy):
     def __init__(self, host: str, llm_config: LlmConfig):

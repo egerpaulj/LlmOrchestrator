@@ -5,7 +5,8 @@ from pymongo import MongoClient, errors
 from pymongo.collection import Collection
 from pydantic import ValidationError
 
-from llm_orchestrator.core.workflow import Workflow
+from llm_unified_orchestrator.core.task import WorkflowTaskTemplate
+from llm_unified_orchestrator.core.workflow import Workflow
 
 class WorkflowRepository(ABC):
     """
@@ -45,17 +46,20 @@ class MongoWorkflowRepository(WorkflowRepository):
     def __init__(
         self,
         uri: str = "mongodb://localhost:27017",
-        db_name: str = "llm_orchestrator",
-        collection_name: str = "workflows",
+        db_name: str = "dev",
+        collection_name: str = "llm_workflows",
+        templates_collection_name: str = "llm_templates",
         *,
         connect_timeout_ms: int = 2000,
     ) -> None:
         self._uri = uri
         self._db_name = db_name
         self._collection_name = collection_name
+        self._templates_collection_name = templates_collection_name
         self._client = MongoClient(self._uri, serverSelectionTimeoutMS=connect_timeout_ms)
         self._db = self._client[self._db_name]
         self._collection: Collection = self._db[self._collection_name]
+        self._templates_collection: Collection = self._db[self._templates_collection_name]
 
     def list_workflows(self) -> List[Workflow]:
         """
@@ -72,6 +76,14 @@ class MongoWorkflowRepository(WorkflowRepository):
             return workflows
         except errors.PyMongoError as e:
             raise RuntimeError(f"Failed to list workflows: {e}") from e
+    
+    def update_template(self, template: WorkflowTaskTemplate):
+        try:
+            doc: Dict[str, Any] = template.model_dump(by_alias=True, exclude_none=True)
+            result = self._templates_collection.replace_one({"name": template.name}, doc, upsert=True)
+            return bool(result.acknowledged)
+        except errors.PyMongoError as e:
+            raise RuntimeError(f"Failed to update template '{template.name}': {e}") from e
 
     def get_workflow(self, name: str) -> Optional[Workflow]:
         """
@@ -79,9 +91,15 @@ class MongoWorkflowRepository(WorkflowRepository):
         """
         try:
             doc = self._collection.find_one({"name": name})
+            if doc:
+                # Load the template from the templates collection if it exists
+                template_doc = self._templates_collection.find_one({"name": doc.get("template_name")})
+                if template_doc:
+                    doc["template"] = WorkflowTaskTemplate.model_validate(template_doc)
+            
             if not doc:
                 return None
-            return Workflow.parse_obj(doc)
+            return Workflow.model_validate(doc)
         except errors.PyMongoError as e:
             raise RuntimeError(f"Failed to fetch workflow '{name}': {e}") from e
         except ValidationError as e:

@@ -1,7 +1,7 @@
 import os
 from google import genai
 from typing import Optional, Type
-from llm_orchestrator.inference_api.strategies.base import T, LLMProviderStrategy
+from llm_unified_orchestrator.inference_api.strategies.base import T, LLMProviderStrategy
 
 
 class GoogleStrategy(LLMProviderStrategy):

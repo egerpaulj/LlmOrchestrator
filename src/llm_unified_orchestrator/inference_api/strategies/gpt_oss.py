@@ -1,9 +1,9 @@
 import logging
 from typing import Type
-from llm_orchestrator.inference_api.llm_config import LlmConfig
+from llm_unified_orchestrator.inference_api.llm_config import LlmConfig
 from openai import OpenAI
 
-from llm_orchestrator.inference_api.strategies.base import T, LLMProviderStrategy
+from llm_unified_orchestrator.inference_api.strategies.base import T, LLMProviderStrategy
 
 class GptOssStrategy(LLMProviderStrategy):
     def __init__(self, host="http://localhost:11434/v1", llm_config = LlmConfig()):

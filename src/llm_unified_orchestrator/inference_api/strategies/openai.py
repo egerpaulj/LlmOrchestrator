@@ -1,8 +1,8 @@
 import os
 from typing import Type
 from openai import OpenAI
-from llm_orchestrator.inference_api.llm_config import LlmConfig
-from llm_orchestrator.inference_api.strategies.base import T, LLMProviderStrategy
+from llm_unified_orchestrator.inference_api.llm_config import LlmConfig
+from llm_unified_orchestrator.inference_api.strategies.base import T, LLMProviderStrategy
 
 class OpenAIStrategy(LLMProviderStrategy):
     def __init__(self, llm_config: LlmConfig):

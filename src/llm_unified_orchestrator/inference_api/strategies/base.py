@@ -5,9 +5,11 @@ from tenacity import retry, wait_exponential, stop_after_attempt
 
 from pydantic import BaseModel
 
+
 T = TypeVar("T", bound=BaseModel)
 
 class LLMProviderStrategy(ABC):
+        
     @retry(
         wait=wait_exponential(multiplier=4, min=3, max=36),
         stop=stop_after_attempt(5))
