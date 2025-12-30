@@ -25,7 +25,7 @@ class ResultSummaryEnriched(BaseModel):
         )
     )
 
-def build_example_workflow(template_summarize: WorkflowTaskTemplate, template_enrich: WorkflowTaskTemplate) -> Workflow:
+def build_example_workflow(template_summarize: WorkflowTaskTemplate, template_enrich: WorkflowTaskTemplate, template_summarize_context: WorkflowTaskTemplate) -> Workflow:
 
     task_summarize = WorkflowTask(
         result_module_name="__main__",
@@ -44,12 +44,21 @@ def build_example_workflow(template_summarize: WorkflowTaskTemplate, template_en
         status=TaskStatus.PENDING,
         result=None,
     )
+    
+    task_summarize_final = WorkflowTask(
+        result_module_name="__main__",
+        result_class_name=ResultSummary.__name__,
+        template_name=template_summarize_context.name,
+        template=template_summarize_context,
+        status=TaskStatus.PENDING,
+        result=None,
+    )
 
     workflow = Workflow(
         priority=1,
         name="example_ollama_llama3_workflow",
         description="Example workflow demonstrating Ollama and Llama3.2 tasks",
-        tasks=[task_summarize, task_enrich],
+        tasks=[task_summarize, task_enrich, task_summarize_final],
         status=WorkflowStatus.PENDING
     )
 
@@ -96,12 +105,26 @@ def main() -> None:
         mcp_tools=None,
     )
     
+    ## Summarize everything
+    template_summarize_context = WorkflowTaskTemplate(
+        description="Call Ollama for initial summarization",
+        name="llama3_context_summary",
+        user_prompt_id=None,
+        system_prompt_id=None,
+        user_prompt_default="Summarize the context using all enrichments",
+        system_prompt_default="You are a concise summarizer.",
+        strategy="ollama",
+        model="llama3.2",
+        mcp_tools=None,
+    )
+    
     # Add the templates to the repository
     repo.update_template(template_summarize)
     repo.update_template(template_enrich)
+    repo.update_template(template_summarize_context)
 
     # Build the workflow using the templates
-    workflow = build_example_workflow(template_enrich=template_enrich, template_summarize=template_summarize)
+    workflow = build_example_workflow(template_enrich=template_enrich, template_summarize=template_summarize, template_summarize_context=template_summarize_context)
     try:
         saved = repo.update_workflow(workflow)
         print(f"Saved workflow '{workflow.name}': {saved}")
@@ -111,6 +134,7 @@ def main() -> None:
         
         # Start the workflow
         executor.execute_workflow(workflow=workflow, **kwargs)
+        print(f"The final result is: {workflow.tasks.pop().result}")
     except Exception as e:
         print(f"Failed to save workflow: {e}")
     finally:
