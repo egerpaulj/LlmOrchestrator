@@ -101,7 +101,7 @@ Provides persistence for workflows and task results using MongoDB.
 **Install the library**
 
 ```bash
-pip install llm-orchestrator
+pip install llm-unified-orchestrator
 ```
 
 
