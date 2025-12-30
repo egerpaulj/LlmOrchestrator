@@ -257,6 +257,7 @@ The result contains:
 - snapshot of the template
 - result for each task
 - contexts assigned to tasks
+- latency
 
 ```json
 {
@@ -267,41 +268,70 @@ The result contains:
     {
       "status": "completed",
       "context": {},
-      "result": "{\"summary\":\"This quote highlights the parallel between software engineering and analytical detachment, suggesting that both require objective decision-making.\"}",
+      "result": "{\"summary\":\"This phrase highlights that in software engineering, analysis and problem-solving can be separate and distinct from creative design.\"}",
       "result_module_name": "__main__",
       "result_class_name": "ResultSummary",
       "template_name": "llama3_summary",
       "template": {
         "name": "llama3_summary",
         "description": "Call Ollama for initial summarization",
-        "user_prompt_default": "Summarize the following: '{text}'",
+        "user_prompt_default": "Summarize the following: 'The essence of software engineering is similar to the detachment of an analyst'",
         "system_prompt_default": "You are a concise summarizer.",
         "strategy": "ollama",
         "model": "llama3.2"
-      }
+      },
+      "latency_ms": 2992.8982257843018
     },
     {
       "status": "completed",
       "context": {
-        "PreviousTask": "llama3_summary_Call Ollama for initial summarization",
-        "PreviousTask_Result": "{\"summary\":\"This quote highlights the parallel between software engineering and analytical detachment, suggesting that both require objective decision-making.\"}"
+        "PreviousTask_1_llama3_summary_name": "llama3_summary",
+        "PreviousTask_1_llama3_summary_desription": "Call Ollama for initial summarization",
+        "PreviousTask_1_llama3_summary_result": "{\"summary\":\"This phrase highlights that in software engineering, analysis and problem-solving can be separate and distinct from creative design.\"}"
       },
-      "result": "{\"summary\":\"The essence of software engineering is reminiscent of the analytical detachment characteristic of analysts, where both professions require a blend of objective reasoning and detached decision-making. This parallel suggests that, just as an analyst must separate personal biases from data-driven insights to provide unbiased recommendations, a software engineer must similarly detach themselves from emotional attachment to code, focusing on objective problem-solving and evidence-based design principles. By adopting this mindset, software engineers can foster creativity, reduce technical debt, and improve the overall quality and reliability of their systems, ultimately delivering value to users with precision and accuracy.\",\"enriched_summary\":\"This passage weaves together concepts from both the analytical detachment of analysts and the detached decision-making of software engineers, illustrating the importance of objectivity in these fields. The author's notion that a software engineer must separate personal biases from code is a powerful metaphor for the challenges of objective problem-solving.\"}",
+      "result": "{\"summary\":\"The essence of software engineering can be likened to the detachment of an analyst, as both require a focus on problem-solving and analysis, rather than creative expression or design input. In this sense, software engineers can adopt a similar mindset, focusing on functionality, modularity, and scalability, rather than aesthetics or innovative design elements. This mindset is essential in ensuring that software development remains a systematic and methodical process, prioritizing the needs of users over individual creative vision. By embracing this detached analytical approach, software engineers can produce reliable, efficient, and maintainable software systems.\",\"enriched_summary\":\"The concept of detachment in software engineering draws parallels with the role of an analyst, emphasizing the importance of separating analysis from creative design elements. This dichotomy highlights the distinct nature of these professions, where analysts focus on problem-solving and analysis, whereas designers prioritize creative expression. By adopting a similar detached analytical mindset, software engineers can align their work more closely with the principles of systematic development, ensuring that the needs of users are prioritized over individual design preferences.\"}",
       "result_module_name": "__main__",
       "result_class_name": "ResultSummaryEnriched",
       "template_name": "llama3_enrich",
       "template": {
         "name": "llama3_enrich",
         "description": "Call Llama3.2 for enrichment",
-        "user_prompt_default": "Enrich the summary. Oringal text: {text}",
-        "system_prompt_default": "You are an assistant that expands ideas.",
+        "user_prompt_default": "Enrich the summary. Original text: The essence of software engineering is similar to the detachment of an analyst",
+        "system_prompt_default": "You are an assistant that expands ideas.\n            \n            ## Context\n            If relevant, use the following contextual information:\n            {'PreviousTask_1_llama3_summary_name': 'llama3_summary', 'PreviousTask_1_llama3_summary_desription': 'Call Ollama for initial summarization', 'PreviousTask_1_llama3_summary_result': '{\"summary\":\"This phrase highlights that in software engineering, analysis and problem-solving can be separate and distinct from creative design.\"}'}",
         "strategy": "ollama",
         "model": "llama3.2"
-      }
+      },
+      "latency_ms": 18210.546016693115
+    },
+    {
+      "status": "completed",
+      "context": {
+        "PreviousTask_1_llama3_summary_name": "llama3_summary",
+        "PreviousTask_1_llama3_summary_desription": "Call Ollama for initial summarization",
+        "PreviousTask_1_llama3_summary_result": "{\"summary\":\"This phrase highlights that in software engineering, analysis and problem-solving can be separate and distinct from creative design.\"}",
+        "PreviousTask_2_llama3_enrich_name": "llama3_enrich",
+        "PreviousTask_2_llama3_enrich_desription": "Call Llama3.2 for enrichment",
+        "PreviousTask_2_llama3_enrich_result": "{\"summary\":\"The essence of software engineering can be likened to the detachment of an analyst, as both require a focus on problem-solving and analysis, rather than creative expression or design input. In this sense, software engineers can adopt a similar mindset, focusing on functionality, modularity, and scalability, rather than aesthetics or innovative design elements. This mindset is essential in ensuring that software development remains a systematic and methodical process, prioritizing the needs of users over individual creative vision. By embracing this detached analytical approach, software engineers can produce reliable, efficient, and maintainable software systems.\",\"enriched_summary\":\"The concept of detachment in software engineering draws parallels with the role of an analyst, emphasizing the importance of separating analysis from creative design elements. This dichotomy highlights the distinct nature of these professions, where analysts focus on problem-solving and analysis, whereas designers prioritize creative expression. By adopting a similar detached analytical mindset, software engineers can align their work more closely with the principles of systematic development, ensuring that the needs of users are prioritized over individual design preferences.\"}"
+      },
+      "result": "{\"summary\":\"The essence of software engineering is highlighted to draw a parallel between detachment and analysis, similar to the role of an analyst. Analysis focuses on problem-solving and separation from creative design elements, whereas designers prioritize expression. A detached analytical mindset for software engineers aligns with systematic development principles, prioritizing user needs over individual preferences.\"}",
+      "result_module_name": "__main__",
+      "result_class_name": "ResultSummary",
+      "template_name": "llama3_context_summary",
+      "template": {
+        "name": "llama3_context_summary",
+        "description": "Call Ollama for initial summarization",
+        "user_prompt_default": "Summarize the context using all enrichments",
+        "system_prompt_default": "You are a concise summarizer.\n            \n            ## Context\n            If relevant, use the following contextual information:\n            {'PreviousTask_1_llama3_summary_name': 'llama3_summary', 'PreviousTask_1_llama3_summary_desription': 'Call Ollama for initial summarization', 'PreviousTask_1_llama3_summary_result': '{\"summary\":\"This phrase highlights that in software engineering, analysis and problem-solving can be separate and distinct from creative design.\"}', 'PreviousTask_2_llama3_enrich_name': 'llama3_enrich', 'PreviousTask_2_llama3_enrich_desription': 'Call Llama3.2 for enrichment', 'PreviousTask_2_llama3_enrich_result': '{\"summary\":\"The essence of software engineering can be likened to the detachment of an analyst, as both require a focus on problem-solving and analysis, rather than creative expression or design input. In this sense, software engineers can adopt a similar mindset, focusing on functionality, modularity, and scalability, rather than aesthetics or innovative design elements. This mindset is essential in ensuring that software development remains a systematic and methodical process, prioritizing the needs of users over individual creative vision. By embracing this detached analytical approach, software engineers can produce reliable, efficient, and maintainable software systems.\",\"enriched_summary\":\"The concept of detachment in software engineering draws parallels with the role of an analyst, emphasizing the importance of separating analysis from creative design elements. This dichotomy highlights the distinct nature of these professions, where analysts focus on problem-solving and analysis, whereas designers prioritize creative expression. By adopting a similar detached analytical mindset, software engineers can align their work more closely with the principles of systematic development, ensuring that the needs of users are prioritized over individual design preferences.\"}'}",
+        "strategy": "ollama",
+        "model": "llama3.2"
+      },
+      "latency_ms": 16248.25119972229
     }
   ],
-  "status": "completed"
+  "status": "completed",
+  "latency_ms": 37495.9077835083
 }
+
 ```
 
 ## License

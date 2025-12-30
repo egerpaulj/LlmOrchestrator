@@ -1,6 +1,6 @@
 [project]
 name = "llm_unified_orchestrator"
-version = "1.0.2"
+version = "1.0.3"
 description = "Orchestrate LLM tasks. Define workflows, run and track progress."
 readme = "readme.py.md"
 requires-python = ">=3.10.16"

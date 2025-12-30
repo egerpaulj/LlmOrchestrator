@@ -18,5 +18,5 @@ class Workflow(BaseModel):
         description: str = Field(description="Description of what the workflow does")
         priority: int = Field(0,description="Priority of the task; higher numbers indicate higher priority",)
         tasks: List[WorkflowTask] = Field(description="List of tasks to")
-        status: WorkflowStatus = Field(WorkflowStatus.PENDING, description="Current status of the workflow",
-)
+        status: WorkflowStatus = Field(WorkflowStatus.PENDING, description="Current status of the workflow",)
+        latency_ms: float | None = Field(None, description="The latency of the workflow")

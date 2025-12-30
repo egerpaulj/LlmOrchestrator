@@ -1,3 +1,4 @@
+import time
 from typing import Type
 from pydantic import BaseModel
 from llm_unified_orchestrator.core.prompts.base import PromptProvider
@@ -33,18 +34,49 @@ class WorkflowExecutor:
         return cls
 
     def execute_workflow(self, workflow: Workflow, **kwargs):
+        """
+        Execute a workflow by iterating through its tasks and processing each one sequentially.
+        This method processes all incomplete tasks in a workflow, creating the appropriate
+        inference strategy for each task based on its template configuration. Each task's
+        execution latency is measured and recorded.
+        Args:
+            workflow (Workflow): The workflow object containing the list of tasks to execute.
+            **kwargs: Additional keyword arguments to pass to the execute_task method.
+        Raises:
+            ValueError: If a task's template is None or if the template's strategy is None.
+        Returns:
+            None
+        Side Effects:
+            - Updates each task's latency_ms attribute with execution time in milliseconds.
+            - Calls finalize_task for each executed task.
+            - Calls finalize_workflow after all tasks are processed.
+            - Skips tasks that already have a status of TaskStatus.COMPLETED.
+        """
         previous = None
+        
+        workflow_start_time = time.time()
         
         for index, task in enumerate(workflow.tasks):
             if task.status is TaskStatus.COMPLETED:
                 continue
             
-            llm_inference = create_inference_strategy_local(name = task.template.strategy, llm_config=self.llm_config) # type: ignore
+            if task.template is None:
+                raise ValueError("The template is empty: " + task.template_name)
+            
+            if task.template.strategy is None:
+                raise ValueError("The strategy is empty for: " + task.template_name)
+            
+            llm_inference = create_inference_strategy_local(name = task.template.strategy, llm_config=self.llm_config) 
+            
+            start_time = time.time()
             self.execute_task(task_index=index, previous=previous, task=task, llm_inference=llm_inference, **kwargs)
+            task.latency_ms = (time.time() - start_time) * 1000
+           
             self.finalizer.finalize_task(task, workflow)
 
             previous = task
             
+        workflow.latency_ms = (time.time() - workflow_start_time) * 1000
         self.finalizer.finalize_workflow(workflow=workflow)
             
     def execute_task(self, task_index: int, previous: WorkflowTask | None, task: WorkflowTask, llm_inference: LLMProviderStrategy, **kwargs):

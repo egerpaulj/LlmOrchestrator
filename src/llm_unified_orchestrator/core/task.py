@@ -33,6 +33,7 @@ class WorkflowTask(BaseModel):
     result_class_name: str = Field(description="The class name of the exprected result. Must be pydantic")
     template_name: str = Field(description="A workflow task template identifier")
     template: WorkflowTaskTemplate | None = Field(None, description="A workflow task template")
+    latency_ms: float | None = Field(None, description="The latency of the task")
     
     
     

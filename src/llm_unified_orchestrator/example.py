@@ -34,6 +34,7 @@ def build_example_workflow(template_summarize: WorkflowTaskTemplate, template_en
         template=template_summarize,
         status=TaskStatus.PENDING,
         result=None,
+        latency_ms=None
     )
     
     task_enrich = WorkflowTask(
@@ -43,6 +44,7 @@ def build_example_workflow(template_summarize: WorkflowTaskTemplate, template_en
         template_name=template_enrich.name,
         status=TaskStatus.PENDING,
         result=None,
+        latency_ms=None
     )
     
     task_summarize_final = WorkflowTask(
@@ -52,6 +54,7 @@ def build_example_workflow(template_summarize: WorkflowTaskTemplate, template_en
         template=template_summarize_context,
         status=TaskStatus.PENDING,
         result=None,
+        latency_ms=None
     )
 
     workflow = Workflow(
@@ -59,7 +62,8 @@ def build_example_workflow(template_summarize: WorkflowTaskTemplate, template_en
         name="example_ollama_llama3_workflow",
         description="Example workflow demonstrating Ollama and Llama3.2 tasks",
         tasks=[task_summarize, task_enrich, task_summarize_final],
-        status=WorkflowStatus.PENDING
+        status=WorkflowStatus.PENDING,
+        latency_ms=None
     )
 
     return workflow
